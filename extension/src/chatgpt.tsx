@@ -213,7 +213,7 @@ export const useLocalStorage = <T extends string | number | boolean | null | und
 
 const App = () => {
   const [isVisible, setIsVisible] = React.useState(true)
-  const [value, setValue] = useLocalStorage<string>('chatgpt-input', '')
+  const [value] = useLocalStorage<string>('chatgpt-input', '')
   const lastValueRef = React.useRef<string>(value || '')
   const [isWarning, setIsWarning] = React.useState(false)
 
@@ -221,6 +221,7 @@ const App = () => {
     const lastLength = lastValueRef.current.length
     const newLength = value?.length || 0
     if (newLength - lastLength > 5) {
+      setIsVisible(true)
       setIsWarning(true)
     } else {
       setIsWarning(false)
