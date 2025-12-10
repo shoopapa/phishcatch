@@ -22,7 +22,7 @@ module.exports = {
     popup: path.join(__dirname, srcDir + 'popup.tsx'),
     background: path.join(__dirname, srcDir + 'background.ts'),
     content: path.join(__dirname, srcDir + 'content.ts'),
-    chatgpt: path.join(__dirname, srcDir + 'chatgpt.ts'),
+    chatgpt: path.join(__dirname, srcDir + 'chatgpt.tsx'),
   },
   output: {
     path: path.join(__dirname, '../dist/js'),
