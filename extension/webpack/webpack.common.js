@@ -13,7 +13,7 @@
 // limitations under the License.
 
 const path = require('path')
-const webpack = require('webpack');
+const webpack = require('webpack')
 const CopyPlugin = require('copy-webpack-plugin')
 const srcDir = '../src/'
 
@@ -22,18 +22,14 @@ module.exports = {
     popup: path.join(__dirname, srcDir + 'popup.tsx'),
     background: path.join(__dirname, srcDir + 'background.ts'),
     content: path.join(__dirname, srcDir + 'content.ts'),
+    chatgpt: path.join(__dirname, srcDir + 'chatgpt.ts'),
   },
   output: {
     path: path.join(__dirname, '../dist/js'),
     filename: '[name].js',
     hashFunction: 'xxhash64',
   },
-  optimization: {
-    splitChunks: {
-      name: 'vendor',
-      chunks: 'initial',
-    },
-  },
+
   module: {
     rules: [
       {
@@ -46,9 +42,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
     fallback: {
-      "buffer": require.resolve('buffer/'),
-      'util': require.resolve('util/')
-    }
+      buffer: require.resolve('buffer/'),
+      util: require.resolve('util/'),
+    },
   },
   plugins: [
     new webpack.ProvidePlugin({

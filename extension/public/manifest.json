@@ -1,5 +1,6 @@
 {
-  "manifest_version": 2,
+  "$schema": "https://json.schemastore.org/chrome-manifest",
+  "manifest_version": 3,
   "name": "PhishCatch",
   "description": "Identify and prevent enterprise password leaks",
   "version": "0.16",
@@ -9,38 +10,27 @@
   "storage": {
     "managed_schema": "schema.json"
   },
-  "externally_connectable": {},
-  "content_security_policy": "script-src 'self'; object-src 'self'; connect-src http://localhost:* https://*",
   "background": {
-    "scripts": [
-      "js/background.js",
-      "js/vendor.js"
-    ],
-    "persistent": true
+    "service_worker": "js/background.js"
   },
-  "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html",
-    "default_title": "PhishCatch"
+  "action": {
+    "default_popup": "popup.html"
   },
   "web_accessible_resources": [],
   "content_scripts": [
     {
-      "matches": [
-        "*://*/*"
-      ],
+      "matches": ["*://*/*"],
       "all_frames": true,
       "run_at": "document_idle",
-      "js": [
-        "js/content.js",
-        "js/vendor.js"
-      ]
+      "js": ["js/content.js"]
+    },
+    {
+      "matches": ["https://chatgpt.com/*"],
+      "all_frames": true,
+      "run_at": "document_idle",
+      "js": ["js/chatgpt.js"]
     }
   ],
-  "permissions": [
-    "http://*/*",
-    "https://*/*",
-    "storage",
-    "notifications"
-  ]
+  "permissions": ["storage", "notifications", "webRequest"],
+  "host_permissions": ["https://chatgpt.com/*"]
 }

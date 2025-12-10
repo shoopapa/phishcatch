@@ -23,7 +23,12 @@ import {
   AlertTypes,
   PasswordHash,
 } from './types'
-import { hashAndSavePassword as hashAndSavePassword, saveUsername, getHashDataIfItExists, removeHash } from './lib/userInfo'
+import {
+  hashAndSavePassword as hashAndSavePassword,
+  saveUsername,
+  getHashDataIfItExists,
+  removeHash,
+} from './lib/userInfo'
 import { checkDOMHash, saveDOMHash } from './lib/domhash'
 import { showCheckmarkIfEnterpriseDomain } from './lib/showCheckmarkIfEnterpriseDomain'
 import { createServerAlert } from './lib/sendAlert'
@@ -31,14 +36,15 @@ import { getDomainType } from './lib/getDomainType'
 import { getHostFromUrl } from './lib/getHostFromUrl'
 import { timedCleanup } from './lib/timedCleanup'
 import { addNotitication, handleNotificationClick } from './lib/handleNotificationClick'
+import { conversationSchema } from './lib/chatGptSchema'
 
-export async function receiveMessage(message: PageMessage): Promise<void> {
+export async function receiveMessage(message: PageMessage | { msgtype: string }): Promise<void> {
   switch (message.msgtype) {
     case 'debug': {
       break
     }
     case 'username': {
-      const content = <UsernameContent>message.content
+      const content = <UsernameContent>(message as PageMessage).content
 
       if ((await getDomainType(getHostFromUrl(content.url))) === DomainType.ENTERPRISE) {
         void saveUsername(content.username)
@@ -47,14 +53,14 @@ export async function receiveMessage(message: PageMessage): Promise<void> {
       break
     }
     case 'password': {
-      const content = <PasswordContent>message.content
+      const content = <PasswordContent>(message as PageMessage).content
       if (content.password) {
         void handlePasswordEntry(content)
       }
       break
     }
     case 'domstring': {
-      const content = <DomstringContent>message.content
+      const content = <DomstringContent>(message as PageMessage).content
       void checkDOMHash(content.dom, content.url)
       break
     }
@@ -119,6 +125,38 @@ async function handlePasswordLeak(message: PasswordContent, hashData: PasswordHa
     await removeHash(hashData.hash)
   }
 }
+
+chrome.webRequest.onBeforeRequest.addListener(
+  (details) => {
+    if (details.method !== 'POST') {
+      return
+    }
+
+    if (!details.requestBody.raw) {
+      return
+    }
+
+    let text = ''
+    const decoder = new TextDecoder('utf-8')
+    for (const item of details.requestBody.raw) {
+      // chat doesn't seem to send multiple chunks, may need to handle that later
+      if (item.bytes) {
+        text += decoder.decode(item.bytes)
+      }
+    }
+    const chatMessageReuqest = conversationSchema.parse(JSON.parse(text))
+
+    console.log('chatMessageReuqest', chatMessageReuqest)
+    console.log(
+      'User Sent Message: ',
+      chatMessageReuqest.messages[chatMessageReuqest.messages.length - 1].content.parts.join(', '),
+    )
+  },
+  {
+    urls: ['https://chatgpt.com/backend-api/f/conversation*'],
+  },
+  ['requestBody'],
+)
 
 function setup() {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
