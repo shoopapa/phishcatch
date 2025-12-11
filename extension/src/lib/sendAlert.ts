@@ -38,7 +38,7 @@ export async function getUnsentAlerts(): Promise<UnsentAlert[]> {
   return new Promise((resolve) => {
     chrome.storage.local.get('unsentAlerts', (data) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const unsentAlerts: UnsentAlert[] = data.unsentAlerts || []
+      const unsentAlerts: UnsentAlert[] = (data.unsentAlerts as UnsentAlert[]) || []
       resolve(unsentAlerts)
     })
   })

@@ -33,6 +33,7 @@ export const ManualPasswordForm = observer(() => {
       }}
       intent={Intent.PRIMARY}
       icon={'manually-entered-data'}
+      {...({} as any)}
     >
       <Label>
         Hash and save password

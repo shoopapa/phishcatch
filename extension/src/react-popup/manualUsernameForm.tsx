@@ -33,6 +33,7 @@ export const ManualUsernameForm = observer(() => {
       }}
       intent={Intent.PRIMARY}
       icon={'manually-entered-data'}
+      {...({} as any)}
     >
       <Label>
         Input username

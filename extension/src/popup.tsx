@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
 import { App } from './react-popup/app'
+import { createRoot } from 'react-dom/client'
 
 function ready(callbackFunc: () => void) {
   if (document.readyState !== 'loading') {
@@ -25,5 +25,5 @@ function ready(callbackFunc: () => void) {
 }
 
 ready(() => {
-  ReactDOM.render(<App />, document.getElementById('root'))
+  createRoot(document.getElementById('root')!).render(<App />)
 })

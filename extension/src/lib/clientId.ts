@@ -33,7 +33,7 @@ export function getId(): Promise<string> {
         void saveId(newId)
         resolve(newId)
       } else {
-        resolve(data.clientId)
+        resolve(data.clientId as string)
       }
     })
   })

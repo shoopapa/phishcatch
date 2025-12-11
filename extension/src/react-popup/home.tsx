@@ -46,7 +46,7 @@ export function Home() {
         )}
 
         {popupStore.config.manual_password_entry && (
-          <Tooltip content={`Manually hash and save a password so that reuse can be detected`}>
+          <Tooltip content={`Manually hash and save a password so that reuse can be detected`} {...({} as any)}>
             <Button
               intent="primary"
               onClick={() => {
@@ -59,7 +59,7 @@ export function Home() {
           </Tooltip>
         )}
 
-        <Tooltip content={`Save a username`}>
+        <Tooltip content={`Save a username`} {...({} as any)}>
           <Button
             intent="primary"
             onClick={() => {

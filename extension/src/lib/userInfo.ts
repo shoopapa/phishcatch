@@ -20,7 +20,7 @@ export async function getUsernames(): Promise<Username[]> {
   return new Promise((resolve) => {
     chrome.storage.local.get('usernames', (data) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const usernames: Username[] = data.usernames || []
+      const usernames: Username[] = (data.usernames as Username[]) || []
       resolve(usernames)
     })
   })
@@ -85,7 +85,7 @@ export async function getPasswordHashes(): Promise<PasswordHash[]> {
   return new Promise((resolve) => {
     chrome.storage.local.get('passwordHashes', (data) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const hashes: PasswordHash[] = data.passwordHashes || []
+      const hashes: PasswordHash[] = (data.passwordHashes as PasswordHash[]) || []
       resolve(hashes)
     })
   })

@@ -28,15 +28,15 @@ export function handleNotificationClick(notifId: string, btnId: number) {
   if (notificationData) {
     const alertIconUrl = chrome.runtime.getURL('icon.png')
     if (btnId === 0) {
-      const opt: chrome.notifications.NotificationOptions = {
-        type: 'basic',
+      const opt = {
+        type: 'basic' as const,
         title: 'PhishCatch Alert',
         message: `Reporting false positive and removing matched password`,
         iconUrl: alertIconUrl,
         priority: 2,
       }
 
-      chrome.notifications.create(opt)
+      chrome.notifications.create(opt as any)
 
       void createServerAlert({
         referrer: '',
@@ -45,15 +45,15 @@ export function handleNotificationClick(notifId: string, btnId: number) {
         alertType: AlertTypes.FALSEPOSITIVE,
       })
     } else if (btnId === 1) {
-      const opt: chrome.notifications.NotificationOptions = {
-        type: 'basic',
+      const opt = {
+        type: 'basic' as const,
         title: 'PhishCatch Alert',
         message: `Removing matched password`,
         iconUrl: alertIconUrl,
         priority: 2,
       }
 
-      chrome.notifications.create(opt)
+      chrome.notifications.create(opt as any)
 
       void createServerAlert({
         referrer: '',

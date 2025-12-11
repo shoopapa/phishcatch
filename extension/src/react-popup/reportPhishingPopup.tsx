@@ -33,6 +33,7 @@ export const ReportPhishingPopup = observer(() => {
       }}
       intent={Intent.PRIMARY}
       icon={'warning-sign'}
+      {...({} as any)}
     >
       Does this look like a phishing page? Bias towards reporting.
     </Alert>

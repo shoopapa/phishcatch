@@ -47,13 +47,13 @@ export async function alertUser(host: string) {
     // Iconurl: https://www.flaticon.com/free-icon/hacker_1995788?term=phish&page=1&position=49
     const alertIconUrl = chrome.runtime.getURL('icon.png')
     const opt = {
-      type: 'basic',
+      type: 'basic' as const,
       title: 'PhishCatch Alert',
       message: `PhishCatch has detected a likely phishing page at: ${host}\n`,
       iconUrl: alertIconUrl,
     }
 
-    chrome.notifications.create(opt)
+    chrome.notifications.create(opt as any)
   }
 }
 

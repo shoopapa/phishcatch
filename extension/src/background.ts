@@ -116,9 +116,21 @@ async function handlePasswordLeak(message: PasswordContent, hashData: PasswordHa
       buttons: [{ title: 'This is a false positive' }, { title: `That wasn't my enterprise password` }],
     }
 
-    chrome.notifications.create(opt, (id) => {
-      addNotitication({ id, hash: hashData.hash, url: message.url })
-    })
+    chrome.notifications.create(
+      '', // Passing an empty string as notificationId lets Chrome generate one
+      {
+        type: 'basic',
+        title: 'PhishCatch Alert',
+        message: `PhishCatch has detected enterprise password re-use on the url: ${message.url}\n`,
+        iconUrl: alertIconUrl,
+        requireInteraction: true,
+        priority: 2,
+        buttons: [{ title: 'This is a false positive' }, { title: `That wasn't my enterprise password` }],
+      },
+      (id) => {
+        addNotitication({ id, hash: hashData.hash, url: message.url })
+      },
+    )
   }
 
   if (config.expire_hash_on_use) {
@@ -132,7 +144,7 @@ chrome.webRequest.onBeforeRequest.addListener(
       return
     }
 
-    if (!details.requestBody.raw) {
+    if (!details.requestBody?.raw) {
       return
     }
 
@@ -144,13 +156,14 @@ chrome.webRequest.onBeforeRequest.addListener(
         text += decoder.decode(item.bytes)
       }
     }
-    const chatMessageReuqest = conversationSchema.parse(JSON.parse(text))
-
-    console.log('chatMessageReuqest', chatMessageReuqest)
+    const obj = JSON.parse(text)
+    console.log('chatMessageReuqest', obj)
+    const chatMessageReuqest = conversationSchema.parse(obj)
     console.log(
       'User Sent Message: ',
       chatMessageReuqest.messages[chatMessageReuqest.messages.length - 1].content.parts.join(', '),
     )
+    return undefined
   },
   {
     urls: ['https://chatgpt.com/backend-api/f/conversation*'],
