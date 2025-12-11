@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { debounce } from './content-lib/debounce'
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 
@@ -39,11 +38,13 @@ function ready(callbackFunc: () => void) {
   }
 }
 
-const setStorage = (event: Event) => {
-  const ptext = getElement('//*[@id="prompt-textarea"]/p', event.target as Node)
-  chrome.storage.local.set({ 'chatgpt-input': ptext?.innerText || null })
+const setStorage = () => {
+  // Search from document root to find the textarea content
+  const ptext = getElement('//*[@id="prompt-textarea"]/p')
+  const text = ptext?.innerText || null
+  console.log('Setting storage with text:', text)
+  chrome.storage.local.set({ 'chatgpt-input': text })
 }
-const debouncedSetStorage = debounce(setStorage, 100)
 
 ready(() => {
   const attachedElements = new WeakSet<HTMLElement>()
@@ -54,12 +55,14 @@ ready(() => {
       return
     }
 
-    element.addEventListener('input', (event) => {
-      debouncedSetStorage(event)
-    })
     element.addEventListener('paste', (event) => {
-      debouncedSetStorage(event)
+      console.log('Paste event detected')
+      // Wait for the pasted content to be inserted into the DOM
+      setTimeout(() => {
+        setStorage()
+      }, 50)
     })
+
     attachedElements.add(element)
   }
 
@@ -212,37 +215,25 @@ export const useLocalStorage = <T extends string | number | boolean | null | und
 }
 
 const App = () => {
-  const [isVisible, setIsVisible] = React.useState(true)
-  const [value] = useLocalStorage<string>('chatgpt-input', '')
-  const lastValueRef = React.useRef<string>(value || '')
-  const [isWarning, setIsWarning] = React.useState(false)
+  const [value, setValue] = useLocalStorage<string>('chatgpt-input', '')
 
-  React.useEffect(() => {
-    const lastLength = lastValueRef.current.length
-    const newLength = value?.length || 0
-    if (newLength - lastLength > 5) {
-      setIsVisible(true)
-      setIsWarning(true)
-    } else {
-      setIsWarning(false)
-    }
-    lastValueRef.current = value || ''
-  }, [value])
+  const handleDismiss = () => {
+    setValue('')
+  }
 
-  if (!isVisible) return null
+  if (!value) return null
 
   return (
     <div className="phish-window">
       <div className="phish-header">
         <div className="phish-content">
-          <div className="phish-title">PhishCatch</div>
+          <div className="phish-title">⚠️ Paste Detected</div>
           <div className="phish-message">
-            {isWarning
-              ? 'Are you sure you mean to leak company data? This input contains a large amount of text.'
-              : value}
+            You just pasted text into ChatGPT. Are you sure you want to share this data? It may contain sensitive
+            company information.
           </div>
         </div>
-        <button className="phish-close-btn" onClick={() => setIsVisible(false)}>
+        <button className="phish-close-btn" onClick={handleDismiss}>
           x
         </button>
       </div>
